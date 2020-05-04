@@ -1,31 +1,65 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "FB Video Downloader";
 }
 
 <div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    <h2>Facebook Video Downloader</h2>
+    <ul>
+        <li>Go to the Private Video Page</li>
+        <li>Press CTRL + U to view page source</li>
+        <li>Copy and Paste the page source below</li>
+    </ul>
 </div>
 
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+        <form id="facebookTest">
+            <h2>Paste the source code here</h2>
+            <textarea cols="200" rows="10" id="fbText" required></textarea>
+        </form>
+        <button type="submit" id="btnVideo" class="btn btn-success">Get video</button>
     </div>
 </div>
+<hr />
+<div class="row">
+    <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+        <a id="btnSD" class="btn-default" hidden="hidden" href="" target="_blank">Get SD video</a>
+        <a id="btnHD" class="btn-default" hidden="hidden" href="" target="_blank">Get HD video</a>
+    </div>
+</div>
+
+<script>
+    $("#btnVideo").click(function (e) {
+        $("#btnSD").hide();
+        $("#btnSD").removeClass("btn");
+        $("#btnSD").attr("href", "");
+        $("#btnHD").hide();
+        $("#btnHD").removeClass("btn");
+        $("#btnHD").attr("href", "");
+
+        e.preventDefault();
+        $.ajax({
+            url: "/Home/GetFBVideo",
+            type: "POST",
+            data: { info: $("#fbText").val() },
+            success: function (answer) {
+                var jsonAnswer = $.parseJSON(answer);
+                if (jsonAnswer.sd != "null") {
+                    $("#btnSD").show();
+                    $("#btnSD").addClass("btn");
+                    $("#btnSD").attr("href", jsonAnswer.sd);
+                }
+
+                if (jsonAnswer.hd != "null") {
+                    $("#btnHD").show();
+                    $("#btnHD").addClass("btn");
+                    $("#btnHD").attr("href", jsonAnswer.hd);
+                }
+            },
+            error: function (answer) {
+                alert("The video was not found or this is not a valid facebook video web page");
+            }
+        });
+    });
+
+</script>
